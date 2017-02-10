@@ -1,5 +1,3 @@
-multi_client/server/server/Debug
-
 *.db
 *.opendb
 *.sln
