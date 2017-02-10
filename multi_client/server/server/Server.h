@@ -46,7 +46,7 @@ public:
     void UpdateServer() {
         for (size_t i = 0; i < Clients.size(); i++)
         {
-            if (Clients[i].status == 1) {
+            if (Clients[i].status == 0) {
                 if (Clients[i].handle == NULL){
                     Clients[i].handle = CreateThread(0, 0, Receive, &Clients[i], 0, &ThreadID);
                 }
@@ -64,7 +64,6 @@ public:
 
             SOCKET CSocket = INVALID_SOCKET;
             CSocket = accept(lSocket, NULL, NULL);
-
             if (Clients.size() > MaxCon) continue;
             if (CSocket != INVALID_SOCKET) Clients.push_back(ClientInfo(CSocket, 0));
             UpdateServer();
@@ -88,6 +87,7 @@ public:
                 break;
             }
         } while (true);
+        printf_s("user disconnect\n");
         shutdown(CInfo->Socket, SD_SEND);
         closesocket(CInfo->Socket);
         CInfo->status = 0;
