@@ -1,20 +1,32 @@
 #include<stdio.h>
 #include<iostream>
 #include<string>
+#include<thread>
 
 #include "client.h"
 
+Client client;
 
-int main(){
-    Client cli;
+void sendHandler()
+{
+    bool status;
 
     std::string sendMsg;
     do
     {
         std::getline(std::cin, sendMsg);
-        cli.SendMsg(sendMsg);
+        status = client.SendMsg(sendMsg);
 
-    } while (true);
+    } while (status == true);
+}
+
+int main(){
+    
+    std::thread sendThread (sendHandler);
+
+    sendThread.join();
+
+    std::cout << "end thread" << std::endl;
 
     return 0;
 }
