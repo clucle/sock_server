@@ -81,7 +81,7 @@ public:
         {
             int status = send(Clients[i].Socket, msg.c_str(), msg.length(), 0);
             if (status == SOCKET_ERROR) {
-                printf_s("SOCK ERROR for NO: %d\n", i);
+                printf_s("%d clients", Clients.size());
             }
         }
     }
@@ -95,10 +95,11 @@ public:
         {
             memset(&revBuffer[0], 0, sizeof(revBuffer));
             status = recv(CInfo->Socket, revBuffer, BUFFERSIZE, 0);
+            std::string msg = revBuffer;
             if (status > 0) {
                 printf_s(revBuffer);
                 printf_s("\n");
-                CInfo->instance->SendToAll("A");
+                CInfo->instance->SendToAll(msg);
             }
             else
             {

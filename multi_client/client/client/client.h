@@ -45,5 +45,27 @@ public:
         }
     }
 
+    bool Receive() {
+        char revBuffer[BUFFERSIZE];
+
+        memset(&revBuffer[0], 0, sizeof(revBuffer));
+        int status = recv(ServSocket, revBuffer, BUFFERSIZE, 0);
+        printf_s("\n");
+        printf_s("get data : ");
+        printf_s(revBuffer);
+        printf_s("\n");
+
+        if (status != SOCKET_ERROR) {
+            return true;
+        }
+        else
+        {
+            shutdown(ServSocket, SD_SEND);
+            closesocket(ServSocket);
+            WSACleanup();
+            return false;
+        }
+    }
+
 };
 

@@ -20,11 +20,24 @@ void sendHandler()
     } while (status == true);
 }
 
+void recvHandler()
+{
+    bool status;
+    do
+    {
+        status = client.Receive();
+    } while (status == true);
+}
+
 int main(){
     
     std::thread sendThread (sendHandler);
 
+    std::thread recvThread (recvHandler);
+
     sendThread.join();
+
+    recvThread.join();
 
     std::cout << "end thread" << std::endl;
 
