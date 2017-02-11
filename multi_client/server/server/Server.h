@@ -59,6 +59,7 @@ public:
             }
             else
             {
+                printf_s("why this call?");
                 Clients.erase(Clients.begin() + i);
             }
         }
@@ -81,7 +82,8 @@ public:
         {
             int status = send(Clients[i].Socket, msg.c_str(), msg.length(), 0);
             if (status == SOCKET_ERROR) {
-                printf_s("%d clients", Clients.size());
+                Clients.erase(Clients.begin() + i);
+                i--;
             }
         }
     }
@@ -91,6 +93,7 @@ public:
 
         int status;
         char revBuffer[BUFFERSIZE];
+
         do
         {
             memset(&revBuffer[0], 0, sizeof(revBuffer));
@@ -98,8 +101,8 @@ public:
             std::string msg = revBuffer;
             if (status > 0) {
                 printf_s(revBuffer);
-                printf_s("\n");
-                CInfo->instance->SendToAll(msg);
+                printf_s("     %d    \n", status);
+                //CInfo->instance->SendToAll(msg);
             }
             else
             {

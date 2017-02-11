@@ -16,8 +16,8 @@ void sendHandler()
     {
         std::getline(std::cin, sendMsg);
         status = client.SendMsg(sendMsg);
-
-    } while (status == true);
+        if (status == false) break;
+    } while (true);
 }
 
 void recvHandler()
@@ -26,18 +26,19 @@ void recvHandler()
     do
     {
         status = client.Receive();
-    } while (status == true);
+        if (status == false) break;
+    } while (true);
 }
 
 int main(){
     
     std::thread sendThread (sendHandler);
 
-    std::thread recvThread (recvHandler);
+    //std::thread recvThread (recvHandler);
 
     sendThread.join();
 
-    recvThread.join();
+    //recvThread.join();
 
     std::cout << "end thread" << std::endl;
 
