@@ -14,14 +14,19 @@ class Server {
     WSADATA wsadata;
     SOCKET lSocket;
     DWORD ThreadID;
+
+
     int MaxCon = 100;
     
     class ClientInfo {
     public:
-        ClientInfo(SOCKET sk, int st) { Socket = sk; status = st; handle = NULL;}
+        ClientInfo(SOCKET sk, int st, Server* server) {
+            Socket = sk; status = st; handle = NULL; instance = server;
+        }
         SOCKET Socket;
         int status;
         HANDLE handle;
+        Server* instance;
     };
     std::vector<ClientInfo> Clients;
 
@@ -48,6 +53,7 @@ public:
         {
             if (Clients[i].status == 0) {
                 if (Clients[i].handle == NULL){
+                    
                     Clients[i].handle = CreateThread(0, 0, Receive, &Clients[i], 0, &ThreadID);
                 }
             }
@@ -65,13 +71,24 @@ public:
             SOCKET CSocket = INVALID_SOCKET;
             CSocket = accept(lSocket, NULL, NULL);
             if (Clients.size() > MaxCon) continue;
-            if (CSocket != INVALID_SOCKET) Clients.push_back(ClientInfo(CSocket, 0));
+            if (CSocket != INVALID_SOCKET) Clients.push_back(ClientInfo(CSocket, 0, this));
             UpdateServer();
         } while (true);
     }
 
+    void Server::SendToAll(std::string msg) {
+        for (size_t i = 0; i < Clients.size(); i++)
+        {
+            int status = send(Clients[i].Socket, msg.c_str(), msg.length(), 0);
+            if (status == SOCKET_ERROR) {
+                printf_s("SOCK ERROR for NO: %d\n", i);
+            }
+        }
+    }
+
     static DWORD WINAPI Receive(void* client) {
         ClientInfo* CInfo = (ClientInfo*)client;
+
         int status;
         char revBuffer[BUFFERSIZE];
         do
@@ -81,6 +98,7 @@ public:
             if (status > 0) {
                 printf_s(revBuffer);
                 printf_s("\n");
+                CInfo->instance->SendToAll("A");
             }
             else
             {
