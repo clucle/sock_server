@@ -4,6 +4,7 @@
 #include<stdio.h>
 #include<Windows.h>
 #include<vector>
+#include<iostream>
 
 #pragma comment(lib,"Ws2_32.lib")
 
@@ -52,6 +53,9 @@ public:
         for (size_t i = 0; i < Clients.size(); i++)
         {
             if (Clients[i].status == 0) {
+
+                
+
                 if (Clients[i].handle == NULL){
                     
                     Clients[i].handle = CreateThread(0, 0, Receive, &Clients[i], 0, &ThreadID);
@@ -59,7 +63,6 @@ public:
             }
             else
             {
-                printf_s("why this call?");
                 Clients.erase(Clients.begin() + i);
             }
         }
@@ -73,6 +76,7 @@ public:
             CSocket = accept(lSocket, NULL, NULL);
             if (Clients.size() > MaxCon) continue;
             if (CSocket != INVALID_SOCKET) Clients.push_back(ClientInfo(CSocket, 0, this));
+
             UpdateServer();
         } while (true);
     }
@@ -93,16 +97,18 @@ public:
 
         int status;
         char revBuffer[BUFFERSIZE];
+        int socket = CInfo->Socket;
+        Server* _this = CInfo->instance;
 
         do
         {
             memset(&revBuffer[0], 0, sizeof(revBuffer));
-            status = recv(CInfo->Socket, revBuffer, BUFFERSIZE, 0);
+            status = recv(socket, revBuffer, BUFFERSIZE, 0);
             std::string msg = revBuffer;
             if (status > 0) {
                 printf_s(revBuffer);
                 printf_s("     %d    \n", status);
-                //CInfo->instance->SendToAll(msg);
+                _this->SendToAll(msg);
             }
             else
             {
@@ -113,6 +119,8 @@ public:
         shutdown(CInfo->Socket, SD_SEND);
         closesocket(CInfo->Socket);
         CInfo->status = 0;
+
+        
 
         return 0;
     }

@@ -34,11 +34,11 @@ int main(){
     
     std::thread sendThread (sendHandler);
 
-    //std::thread recvThread (recvHandler);
+    std::thread recvThread (recvHandler);
 
     sendThread.join();
 
-    //recvThread.join();
+    recvThread.join();
 
     std::cout << "end thread" << std::endl;
 
