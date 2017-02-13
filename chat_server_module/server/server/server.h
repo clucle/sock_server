@@ -95,7 +95,7 @@ private:
     int num_clients = 0;
     int temp_id = -1;
 
-    std::thread my_thread[5];
+    std::thread my_thread[MAX_CLIENTS];
     
 public:
     Server() {
