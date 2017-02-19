@@ -115,6 +115,21 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
                         iResult = send(client_array[new_client.id].socket, msg_error.c_str(), strlen(msg_error.c_str()), 0);
                     }
                 }
+                else if (act == "_#03") {
+
+                }
+                else if (act == "_#04") {
+                    /* OUT CHANNEL */
+                    auto it = std::find(ch_vector[new_client.ch].begin(),
+                        ch_vector[new_client.ch].end(), new_client.id);
+                    if (it != ch_vector[new_client.ch].end())
+                        ch_vector[new_client.ch].erase(it);
+
+                    for (auto i = ch_vector[new_client.ch].begin(); i != ch_vector[new_client.ch].end(); ++i)
+                        std::cout << "Vector " << *i << ' ' << std::endl;
+
+                    iResult = send(client_array[new_client.id].socket, recvmsg.c_str(), strlen(recvmsg.c_str()), 0);
+                }
                 else {
                     //Broadcast that message to the other clients
                     for (int i = 0; i < MAX_CLIENTS; i++)
@@ -130,6 +145,7 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
             {
                 msg = "Client #" + std::to_string(new_client.id) + " Disconnected";
 
+                // ROOM DELETE FOR EXIT CLIENT //
                 if (new_client.state == 3) {
                     auto it = std::find(room_vector[new_client.ch][new_client.room].begin(),
                         room_vector[new_client.ch][new_client.room].end(), new_client.id);
@@ -139,6 +155,8 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
                     for (auto i = room_vector[new_client.ch][new_client.room].begin(); i != room_vector[new_client.ch][new_client.room].end(); ++i)
                         std::cout << "Vector " << *i << ' ' << std::endl;
                 }
+
+                // CHANNEL DELETE FOR EXIT CLIENT //
                 if (new_client.state >= 2) {
                     auto it = std::find(ch_vector[new_client.ch].begin(),
                         ch_vector[new_client.ch].end(), new_client.id);
@@ -149,13 +167,15 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
                         std::cout << "Vector " << *i << ' ' << std::endl;
                 }
 
+                // CLOSE SOCKET FOR EXIT CLIENT //
                 std::cout << msg << std::endl;
 
                 closesocket(new_client.socket);
                 closesocket(client_array[new_client.id].socket);
                 client_array[new_client.id].socket = INVALID_SOCKET;
 
-                //Broadcast the disconnection message to the other clients
+                // Broadcast the disconnection message to the other clients
+                
                 for (int i = 0; i < MAX_CLIENTS; i++)
                 {
                     if (client_array[i].socket != INVALID_SOCKET)

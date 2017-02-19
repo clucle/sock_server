@@ -71,6 +71,13 @@ int process_client()
                     client.room = atoi(content.c_str());
                     client.state = 3;
                 }
+                else if (act == "_#03") {
+
+                }
+                else if (act == "_#04") {
+                    client.ch = 0;
+                    client.state = 1;
+                }
                 else {
                     cout << recvmsg << endl;
                 }
@@ -174,7 +181,7 @@ private:
         case 1:
             result_string = "_#01";
             while (true) {
-                cout << "Select Channel [1~20] : ";
+                cout << "Select Channel [1~5] : ";
                 getline(cin, input);
                 check_int = atoi(input.c_str());
 
