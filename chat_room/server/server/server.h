@@ -116,7 +116,13 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
                     }
                 }
                 else if (act == "_#03") {
-
+                    //Broadcast that message to the other clients
+                    for (size_t i = 0; i < ch_vector[new_client.ch].size(); i++)
+                    {
+                        if (client_array[ch_vector[new_client.ch][i]].socket != INVALID_SOCKET)
+                            if (client_array[ch_vector[new_client.ch][i]].state == 2)
+                                iResult = send(client_array[ch_vector[new_client.ch][i]].socket, msg.c_str(), strlen(msg.c_str()), 0);
+                    }
                 }
                 else if (act == "_#04") {
                     /* OUT CHANNEL */

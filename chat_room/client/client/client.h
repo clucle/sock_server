@@ -72,7 +72,7 @@ int process_client()
                     client.state = 3;
                 }
                 else if (act == "_#03") {
-
+                    cout << recvmsg << endl;
                 }
                 else if (act == "_#04") {
                     client.ch = 0;
