@@ -44,15 +44,25 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
                 if (strcmp("", tempmsg))
                     msg = "Client #" + std::to_string(new_client.id) + ": " + tempmsg;
 
+                std::string recvmsg = tempmsg;
+                std::string act = recvmsg.substr(0,4);
+                std::string content = recvmsg.substr(4);
+
                 std::cout << msg.c_str() << std::endl;
 
-                //Broadcast that message to the other clients
-                for (int i = 0; i < MAX_CLIENTS; i++)
-                {
-                    if (client_array[i].socket != INVALID_SOCKET)
-                        if (new_client.id != i)
-                            iResult = send(client_array[i].socket, msg.c_str(), strlen(msg.c_str()), 0);
+                if (act == "_#00") {
+                    iResult = send(client_array[new_client.id].socket, recvmsg.c_str(), strlen(recvmsg.c_str()), 0);
                 }
+                else {
+                    //Broadcast that message to the other clients
+                    for (int i = 0; i < MAX_CLIENTS; i++)
+                    {
+                        if (client_array[i].socket != INVALID_SOCKET)
+                            if (new_client.id != i)
+                                iResult = send(client_array[i].socket, msg.c_str(), strlen(msg.c_str()), 0);
+                    }
+                }
+               
             }
             else
             {

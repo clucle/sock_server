@@ -18,22 +18,34 @@ struct client_type
     SOCKET socket;
     int id;
     char received_message[DEFAULT_BUFLEN];
+    string name;
+    int state;
 };
+client_type client = { INVALID_SOCKET, -1, "", "", 0 };
 
-int process_client(client_type &new_client);
+int process_client();
 
-int process_client(client_type &new_client)
+int process_client()
 {
     while (1)
     {
-        memset(new_client.received_message, 0, DEFAULT_BUFLEN);
-
-        if (new_client.socket != 0)
+        memset(client.received_message, 0, DEFAULT_BUFLEN);
+        if (client.socket != 0)
         {
-            int iResult = recv(new_client.socket, new_client.received_message, DEFAULT_BUFLEN, 0);
+            int iResult = recv(client.socket, client.received_message, DEFAULT_BUFLEN, 0);
 
-            if (iResult != SOCKET_ERROR)
-                cout << new_client.received_message << endl;
+            if (iResult != SOCKET_ERROR) {
+                string recvmsg = client.received_message;
+                string act = recvmsg.substr(0,4);
+                string content = recvmsg.substr(4);
+
+                if (act == "_#00") {
+                    client.name = content;
+                    client.state = 1;
+                    cout << client.name << " Log In to World!" << endl;
+                }
+
+            }
             else
             {
                 cout << "recv() failed: " << WSAGetLastError() << endl;
@@ -54,7 +66,7 @@ private:
     WSAData wsa_data;
     struct addrinfo *result = NULL, *ptr = NULL, hints;
     string sent_message = "";
-    client_type client = { INVALID_SOCKET, -1, "" };
+    
     int iResult = 0;
     string message;
 
@@ -115,6 +127,29 @@ private:
         cout << "Successfully Connected" << endl;
     }
 
+    string printUserAct(int state) {
+        string input;
+        string result_string;
+
+        switch (state) {
+        case 0:
+            cout << "Input Your Name : ";
+            result_string = "_#00";
+            getline(cin, input);
+            result_string += input;
+            break;
+        case 1:
+            cout << "Select Channel [1~20] : ";
+            result_string = "_#01";
+            getline(cin, input);
+            result_string += input;
+            break;
+        default:
+            cout << "ERROR CASE" << endl;
+            break;
+        }
+        return result_string;
+    }
 
 public:
     int initWinSock() {
@@ -142,20 +177,21 @@ public:
         if (message != "Server is full")
         {
             client.id = atoi(client.received_message);
+            client.state = 0;
 
-            thread my_thread(process_client, client);
+            thread my_thread(process_client);
 
             while (1)
             {
-                getline(cin, sent_message);
-                //sent_message = "A";
+                sent_message = printUserAct(client.state);
+                cout << client.socket << endl;
                 iResult = send(client.socket, sent_message.c_str(), strlen(sent_message.c_str()), 0);
-                Sleep(1);
                 if (iResult <= 0)
                 {
                     cout << "send() failed: " << WSAGetLastError() << endl;
                     break;
                 }
+                Sleep(10);
             }
 
             //Shutdown the connection since no more data will be sent
