@@ -30,3 +30,19 @@ server's channel, room vector
 
 >set name : _#00** (**) name
 >choose channel : _#01** (**) channel
+
+
+current state (now executable ~[_#04])
+    /* ========= state =============
+       0: not login
+         [_#00] input name to login
+       1: select ch
+         [_#01] select ch to join
+       2: in ch
+         [_#02] select room to join
+         [_#03] chat with in same channel
+         [_#04] exit channel
+       3: in room
+         [_#05] chat with in same room
+         [_#06] exit room
+    ============================== */ 
