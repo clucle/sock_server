@@ -19,9 +19,27 @@ struct client_type
     int id;
     char received_message[DEFAULT_BUFLEN];
     string name;
-    int state;
+    __int8 state;
+
+    /* ========= state =============
+       0: not login
+         [_#00] input name to login
+       1: select ch
+         [_#01] select ch to join
+       2: in ch
+         [_#02] select room to join
+         [_#03] chat with in same channel
+         [_#04] exit channel
+       3: in room
+         [_#05] chat with in same room
+         [_#06] exit room
+    ============================== */ 
+    
+    __int8 ch;
+    __int8 room;
+    
 };
-client_type client = { INVALID_SOCKET, -1, "", "", 0 };
+client_type client = { INVALID_SOCKET, -1, "", "", 0, 0, 0 };
 
 int process_client();
 
@@ -43,6 +61,9 @@ int process_client()
                     client.name = content;
                     client.state = 1;
                     cout << client.name << " Log In to World!" << endl;
+                }
+                else if (act == "_#01") {
+
                 }
 
             }
@@ -102,7 +123,7 @@ private:
                 cout << "socket() failed with error: " << WSAGetLastError() << endl;
                 WSACleanup();
                 system("pause");
-                return 1;
+                return false;
             }
 
             // Connect to server.
@@ -121,10 +142,11 @@ private:
             cout << "Unable to connect to server!" << endl;
             WSACleanup();
             system("pause");
-            return 1;
+            return false;
         }
 
         cout << "Successfully Connected" << endl;
+        return true;
     }
 
     string printUserAct(int state) {
@@ -152,10 +174,10 @@ private:
     }
 
 public:
-    int initWinSock() {
+    bool initWinSock() {
         cout << "Starting Client...\n";
 
-        if (!WinSockStartup()) return -1;
+        if (!WinSockStartup()) return false;
 
         ZeroMemory(&hints, sizeof(hints));
         hints.ai_family = AF_UNSPEC;
@@ -164,8 +186,10 @@ public:
 
         cout << "Connecting...\n";
 
-        if (!getAddrInfo()) return -1;
-        if (!connectSocket()) return -1;
+        if (!getAddrInfo()) return false;
+        if (!connectSocket()) return false;
+
+        return true;
     }
 
 

@@ -3,7 +3,7 @@
 int main()
 {
     Client client;
-    client.initWinSock();
+    if(!client.initWinSock()) return -1;
     client.runClient();
     return 0;
 }
