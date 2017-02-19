@@ -8,6 +8,12 @@ variable
 >channel[20]
 >room[20]
 
+>client(ch 00, room 00)
+
+server's channel, room vector
+
+>pushback(cli-ch or cli-room)
+>remove(cli-ch or cli-room)
 
 # CLIENT
 
