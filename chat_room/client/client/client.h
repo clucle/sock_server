@@ -68,6 +68,9 @@ int process_client()
                     client.state = 2;
                     cout << "CH : " << client.ch << " Join!" << endl;
                 }
+                else {
+                    cout << recvmsg << endl;
+                }
 
             }
             else

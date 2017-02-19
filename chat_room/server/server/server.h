@@ -15,15 +15,38 @@
 
 struct client_type
 {
-    int id;
     SOCKET socket;
+    int id;
+    char received_message[DEFAULT_BUFLEN];
     std::string name;
+    __int8 state;
+
+    /* ========= state =============
+    0: not login
+    [_#00] input name to login
+    1: select ch
+    [_#01] select ch to join
+    2: in ch
+    [_#02] select room to join
+    [_#03] chat with in same channel
+    [_#04] exit channel
+    3: in room
+    [_#05] chat with in same room
+    [_#06] exit room
+    ============================== */
+
     __int16 ch;
     __int16 room;
 };
 
 const char OPTION_VALUE = 1;
-const int MAX_CLIENTS = 5;
+const int MAX_CLIENTS = 200;
+
+const int MAX_CHANNEL = 20;
+const int MAX_ROOM = 4;
+
+std::vector<__int16> ch_vector[20];
+std::vector<__int16> room_vector;
 
 //Function Prototypes
 int process_client(client_type &new_client, std::vector<client_type> &client_array, std::thread &thread);
@@ -31,6 +54,7 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
 int process_client(client_type &new_client, std::vector<client_type> &client_array, std::thread &thread)
 {
     std::string msg = "";
+    std::string msg_error = "";
     char tempmsg[DEFAULT_BUFLEN] = "";
 
     //Session
@@ -53,13 +77,27 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
 
                 std::cout << msg.c_str() << std::endl;
 
-                if (act == "_#00") {
+                if (act == "_#00")
+                {
                     new_client.name = content;
+
+                    new_client.state = 1;
                     iResult = send(client_array[new_client.id].socket, recvmsg.c_str(), strlen(recvmsg.c_str()), 0);
                 }
                 else if (act == "_#01") {
-                    new_client.ch = atoi(content.c_str());
-                    iResult = send(client_array[new_client.id].socket, recvmsg.c_str(), strlen(recvmsg.c_str()), 0);
+                    __int16 ch_num = atoi(content.c_str());
+                    if (ch_vector[ch_num].size() < MAX_CHANNEL)
+                    {
+                        new_client.ch = ch_num;
+                        ch_vector[ch_num].push_back(new_client.id);
+
+                        new_client.state = 2;
+                        iResult = send(client_array[new_client.id].socket, recvmsg.c_str(), strlen(recvmsg.c_str()), 0);
+                    }
+                    else {
+                        msg_error = "Channel is full";
+                        iResult = send(client_array[new_client.id].socket, msg_error.c_str(), strlen(msg_error.c_str()), 0);
+                    }
                 }
                 else {
                     //Broadcast that message to the other clients
@@ -75,6 +113,17 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
             else
             {
                 msg = "Client #" + std::to_string(new_client.id) + " Disconnected";
+
+
+                if (new_client.state == 2) {
+                    auto it = std::find(ch_vector[new_client.ch].begin(),
+                        ch_vector[new_client.ch].end(), new_client.id);
+                    if (it != ch_vector[new_client.ch].end())
+                        ch_vector[new_client.ch].erase(it);
+
+                    for (auto i = ch_vector[new_client.ch].begin(); i != ch_vector[new_client.ch].end(); ++i)
+                        std::cout << "Vector " << *i << ' ' << std::endl;
+                }
 
                 std::cout << msg << std::endl;
 
@@ -155,7 +204,7 @@ public:
         //Initialize the client list
         for (int i = 0; i < MAX_CLIENTS; i++)
         {
-            client[i] = { -1, INVALID_SOCKET };
+            client[i] = { INVALID_SOCKET, -1, "", "", 0, 0, 0 };
         }
     };
 
