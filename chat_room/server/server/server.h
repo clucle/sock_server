@@ -17,6 +17,7 @@ struct client_type
 {
     int id;
     SOCKET socket;
+    std::string name;
 };
 
 const char OPTION_VALUE = 1;
@@ -51,6 +52,7 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
                 std::cout << msg.c_str() << std::endl;
 
                 if (act == "_#00") {
+                    new_client.name = content;
                     iResult = send(client_array[new_client.id].socket, recvmsg.c_str(), strlen(recvmsg.c_str()), 0);
                 }
                 else {
