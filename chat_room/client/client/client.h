@@ -35,8 +35,8 @@ struct client_type
          [_#06] exit room
     ============================== */ 
     
-    __int8 ch;
-    __int8 room;
+    __int16 ch;
+    __int16 room;
     
 };
 client_type client = { INVALID_SOCKET, -1, "", "", 0, 0, 0 };
@@ -63,7 +63,10 @@ int process_client()
                     cout << client.name << " Log In to World!" << endl;
                 }
                 else if (act == "_#01") {
-
+                    cout << content << endl;
+                    client.ch = atoi(content.c_str());
+                    client.state = 2;
+                    cout << "CH : " << client.ch << " Join!" << endl;
                 }
 
             }
@@ -153,19 +156,33 @@ private:
         string input;
         string result_string;
 
+        __int8 check_int = 0;
+
         switch (state) {
         case 0:
-            cout << "Input Your Name : ";
             result_string = "_#00";
+            cout << "Input Your Name : ";
             getline(cin, input);
             result_string += input;
             break;
         case 1:
-            cout << "Select Channel [1~20] : ";
             result_string = "_#01";
-            getline(cin, input);
+            while (true) {
+                cout << "Select Channel [1~20] : ";
+                getline(cin, input);
+                check_int = atoi(input.c_str());
+
+                if (check_int > 0 && check_int < 21) {
+                    break;
+                }
+                cout << "Wrong channel, input again!" << endl;
+            }
+
             result_string += input;
             break;
+        case 2:
+            cout << "Do you action : " << endl;
+            getline(cin, input);
         default:
             cout << "ERROR CASE" << endl;
             break;
@@ -208,7 +225,6 @@ public:
             while (1)
             {
                 sent_message = printUserAct(client.state);
-                cout << client.socket << endl;
                 iResult = send(client.socket, sent_message.c_str(), strlen(sent_message.c_str()), 0);
                 if (iResult <= 0)
                 {

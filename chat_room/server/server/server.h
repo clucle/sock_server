@@ -18,6 +18,8 @@ struct client_type
     int id;
     SOCKET socket;
     std::string name;
+    __int16 ch;
+    __int16 room;
 };
 
 const char OPTION_VALUE = 1;
@@ -53,6 +55,10 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
 
                 if (act == "_#00") {
                     new_client.name = content;
+                    iResult = send(client_array[new_client.id].socket, recvmsg.c_str(), strlen(recvmsg.c_str()), 0);
+                }
+                else if (act == "_#01") {
+                    new_client.ch = atoi(content.c_str());
                     iResult = send(client_array[new_client.id].socket, recvmsg.c_str(), strlen(recvmsg.c_str()), 0);
                 }
                 else {
