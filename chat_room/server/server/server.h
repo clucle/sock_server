@@ -45,8 +45,9 @@ const int MAX_CLIENTS = 200;
 const int MAX_CHANNEL = 20;
 const int MAX_ROOM = 4;
 
-std::vector<__int16> ch_vector[20];
-std::vector<__int16> room_vector;
+// ch 1~5, room 1~5
+std::vector<__int16> ch_vector[6];
+std::vector<__int16> room_vector[6][6];
 
 //Function Prototypes
 int process_client(client_type &new_client, std::vector<client_type> &client_array, std::thread &thread);
@@ -99,6 +100,21 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
                         iResult = send(client_array[new_client.id].socket, msg_error.c_str(), strlen(msg_error.c_str()), 0);
                     }
                 }
+                else if (act == "_#02") {
+                    __int16 room_num = atoi(content.c_str());
+                    if (room_vector[new_client.ch][room_num].size() < MAX_ROOM)
+                    {
+                        new_client.room = room_num;
+                        room_vector[new_client.ch][room_num].push_back(new_client.id);
+
+                        new_client.state = 3;
+                        iResult = send(client_array[new_client.id].socket, recvmsg.c_str(), strlen(recvmsg.c_str()), 0);
+                    }
+                    else {
+                        msg_error = "Room is full";
+                        iResult = send(client_array[new_client.id].socket, msg_error.c_str(), strlen(msg_error.c_str()), 0);
+                    }
+                }
                 else {
                     //Broadcast that message to the other clients
                     for (int i = 0; i < MAX_CLIENTS; i++)
@@ -114,8 +130,16 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
             {
                 msg = "Client #" + std::to_string(new_client.id) + " Disconnected";
 
+                if (new_client.state == 3) {
+                    auto it = std::find(room_vector[new_client.ch][new_client.room].begin(),
+                        room_vector[new_client.ch][new_client.room].end(), new_client.id);
+                    if (it != room_vector[new_client.ch][new_client.room].end())
+                        room_vector[new_client.ch][new_client.room].erase(it);
 
-                if (new_client.state == 2) {
+                    for (auto i = room_vector[new_client.ch][new_client.room].begin(); i != room_vector[new_client.ch][new_client.room].end(); ++i)
+                        std::cout << "Vector " << *i << ' ' << std::endl;
+                }
+                if (new_client.state >= 2) {
                     auto it = std::find(ch_vector[new_client.ch].begin(),
                         ch_vector[new_client.ch].end(), new_client.id);
                     if (it != ch_vector[new_client.ch].end())

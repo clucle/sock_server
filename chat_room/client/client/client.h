@@ -60,13 +60,16 @@ int process_client()
                 if (act == "_#00") {
                     client.name = content;
                     client.state = 1;
-                    cout << client.name << " Log In to World!" << endl;
+                    //cout << client.name << " Log In to World!" << endl;
                 }
                 else if (act == "_#01") {
-                    cout << content << endl;
                     client.ch = atoi(content.c_str());
                     client.state = 2;
-                    cout << "CH : " << client.ch << " Join!" << endl;
+                    //cout << "CH : " << client.ch << " Join!" << endl;
+                }
+                else if (act == "_#02") {
+                    client.room = atoi(content.c_str());
+                    client.state = 3;
                 }
                 else {
                     cout << recvmsg << endl;
@@ -184,8 +187,50 @@ private:
             result_string += input;
             break;
         case 2:
-            cout << "Do you action : " << endl;
+            cout << "== Select Your Action ==" << endl;
+            cout << "     1. Join Room" << endl;
+            cout << "     2. Chat Channel" << endl;
+            cout << "     3. Exit Channel" << endl;
+            while (true) {
+                cout << "  Select : ";
+                getline(cin, input);
+                check_int = atoi(input.c_str());
+
+                if (check_int > 0 && check_int < 4) {
+                    break;
+                }
+                cout << "Wrong action, input again!" << endl;
+            }
+            while (true) {
+                if (check_int == 1) {
+                    result_string = "_#02";
+                    cout << "Join Room [1~5] : ";
+                    getline(cin, input);
+                    check_int = atoi(input.c_str());
+
+                    if (check_int > 0 && check_int < 6) {
+                        break;
+                    }
+                    cout << "Wrong rooom, input again!" << endl;
+                }
+                else if (check_int == 2) {
+                    result_string = "_#03";
+                    cout << "Send Message : ";
+                    getline(cin, input);
+                    break;
+                }
+                else if (check_int == 3) {
+                    result_string = "_#04";
+                    input = "";
+                    break;
+                }
+            }
+            result_string += input;
+            break;
+        case 3:
+            cout << "I'm in room" << endl;
             getline(cin, input);
+            break;
         default:
             cout << "ERROR CASE" << endl;
             break;
