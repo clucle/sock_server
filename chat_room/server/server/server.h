@@ -77,15 +77,17 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
                 std::string content = recvmsg.substr(4);
 
                 std::cout << msg.c_str() << std::endl;
-
+                /* Serve Recv Msg -> Send Client Act */
                 if (act == "_#00")
                 {
+                    /* Log In Success */
                     new_client.name = content;
 
                     new_client.state = 1;
                     iResult = send(client_array[new_client.id].socket, recvmsg.c_str(), strlen(recvmsg.c_str()), 0);
                 }
                 else if (act == "_#01") {
+                    /* Join Channel */
                     __int16 ch_num = atoi(content.c_str());
                     if (ch_vector[ch_num].size() < MAX_CHANNEL)
                     {
@@ -101,6 +103,7 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
                     }
                 }
                 else if (act == "_#02") {
+                    /* Join Room */
                     __int16 room_num = atoi(content.c_str());
                     if (room_vector[new_client.ch][room_num].size() < MAX_ROOM)
                     {
@@ -116,6 +119,7 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
                     }
                 }
                 else if (act == "_#03") {
+                    /* Chat in Channel */
                     /* Broadcast that message to Channel */
                     for (size_t i = 0; i < ch_vector[new_client.ch].size(); i++)
                     {
@@ -125,7 +129,7 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
                     }
                 }
                 else if (act == "_#04") {
-                    /* OUT CHANNEL */
+                    /* Out Channel */
                     auto it = std::find(ch_vector[new_client.ch].begin(),
                         ch_vector[new_client.ch].end(), new_client.id);
                     if (it != ch_vector[new_client.ch].end())
@@ -137,6 +141,7 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
                     iResult = send(client_array[new_client.id].socket, recvmsg.c_str(), strlen(recvmsg.c_str()), 0);
                 }
                 else if (act == "_#05") {
+                    /* Chat in Room */
                     /* Broadcast that message to Room */
                     for (size_t i = 0; i < room_vector[new_client.ch][new_client.room].size(); i++)
                     {
@@ -146,7 +151,7 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
                     }
                 }
                 else if (act == "_#06") {
-                    /* OUT CHANNEL */
+                    /* Out Room */
                     auto it = std::find(room_vector[new_client.ch][new_client.room].begin(),
                         room_vector[new_client.ch][new_client.room].end(), new_client.id);
                     if (it != room_vector[new_client.ch][new_client.room].end())
@@ -158,6 +163,7 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
                     iResult = send(client_array[new_client.id].socket, recvmsg.c_str(), strlen(recvmsg.c_str()), 0);
                 }
                 else {
+                    /* Exception */
                     //Broadcast that message to the other clients
                     for (int i = 0; i < MAX_CLIENTS; i++)
                     {

@@ -52,45 +52,55 @@ int process_client()
         {
             int iResult = recv(client.socket, client.received_message, DEFAULT_BUFLEN, 0);
 
+            /* Client Recv Msg -> Act */
             if (iResult != SOCKET_ERROR) {
+                /*
+                 recvmsg : server send msg
+                 act : parsing act ex)_#00
+                 content : recv - act
+                */
                 string recvmsg = client.received_message;
                 string act = recvmsg.substr(0,4);
                 string content = recvmsg.substr(4);
 
                 if (act == "_#00") {
+                    /* Log In */
                     cout << recvmsg << endl;
                     client.name = content;
                     client.state = 1;
-                    //cout << client.name << " Log In to World!" << endl;
                 }
                 else if (act == "_#01") {
+                    /* Join Channel */
                     client.ch = atoi(content.c_str());
                     client.state = 2;
-                    //cout << "CH : " << client.ch << " Join!" << endl;
                 }
                 else if (act == "_#02") {
+                    /* Join Room */
                     client.room = atoi(content.c_str());
                     client.state = 3;
-                    //cout << "Room : " << client.ch << " Join!" << endl;
                 }
                 else if (act == "_#03") {
+                    /* Chat in Channel */
                     cout << recvmsg << endl;
                 }
                 else if (act == "_#04") {
+                    /* Out Channel */
                     client.ch = 0;
                     client.state = 1;
                 }
                 else if (act == "_#05") {
+                    /* Chat in Room */
                     cout << recvmsg << endl;
                 }
                 else if (act == "_#06") {
+                    /* Out Room */
                     client.room = 0;
                     client.state = 2;
                 }
                 else {
+                    /* Exception */
                     cout << recvmsg << endl;
                 }
-
             }
             else
             {
@@ -181,6 +191,12 @@ private:
         __int8 check_int = 0;
 
         switch (state) {
+        /*
+         case 0 : Client Accept
+         case 1 : Client Login
+         case 2 : Client In Channel
+         case 3 : Client In Room
+        */
         case 0:
             result_string = "_#00";
             cout << "Input Your Name : ";
