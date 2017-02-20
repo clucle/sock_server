@@ -116,7 +116,7 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
                     }
                 }
                 else if (act == "_#03") {
-                    //Broadcast that message to the other clients
+                    /* Broadcast that message to Channel */
                     for (size_t i = 0; i < ch_vector[new_client.ch].size(); i++)
                     {
                         if (client_array[ch_vector[new_client.ch][i]].socket != INVALID_SOCKET)
@@ -132,6 +132,27 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
                         ch_vector[new_client.ch].erase(it);
 
                     for (auto i = ch_vector[new_client.ch].begin(); i != ch_vector[new_client.ch].end(); ++i)
+                        std::cout << "Vector " << *i << ' ' << std::endl;
+
+                    iResult = send(client_array[new_client.id].socket, recvmsg.c_str(), strlen(recvmsg.c_str()), 0);
+                }
+                else if (act == "_#05") {
+                    /* Broadcast that message to Room */
+                    for (size_t i = 0; i < room_vector[new_client.ch][new_client.room].size(); i++)
+                    {
+                        if (client_array[room_vector[new_client.ch][new_client.room][i]].socket != INVALID_SOCKET)
+                            if (client_array[room_vector[new_client.ch][new_client.room][i]].state == 3)
+                                iResult = send(client_array[room_vector[new_client.ch][new_client.room][i]].socket, msg.c_str(), strlen(msg.c_str()), 0);
+                    }
+                }
+                else if (act == "_#06") {
+                    /* OUT CHANNEL */
+                    auto it = std::find(room_vector[new_client.ch][new_client.room].begin(),
+                        room_vector[new_client.ch][new_client.room].end(), new_client.id);
+                    if (it != room_vector[new_client.ch][new_client.room].end())
+                        room_vector[new_client.ch][new_client.room].erase(it);
+
+                    for (auto i = room_vector[new_client.ch][new_client.room].begin(); i != room_vector[new_client.ch][new_client.room].end(); ++i)
                         std::cout << "Vector " << *i << ' ' << std::endl;
 
                     iResult = send(client_array[new_client.id].socket, recvmsg.c_str(), strlen(recvmsg.c_str()), 0);

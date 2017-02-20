@@ -58,6 +58,7 @@ int process_client()
                 string content = recvmsg.substr(4);
 
                 if (act == "_#00") {
+                    cout << recvmsg << endl;
                     client.name = content;
                     client.state = 1;
                     //cout << client.name << " Log In to World!" << endl;
@@ -70,6 +71,7 @@ int process_client()
                 else if (act == "_#02") {
                     client.room = atoi(content.c_str());
                     client.state = 3;
+                    //cout << "Room : " << client.ch << " Join!" << endl;
                 }
                 else if (act == "_#03") {
                     cout << recvmsg << endl;
@@ -77,6 +79,13 @@ int process_client()
                 else if (act == "_#04") {
                     client.ch = 0;
                     client.state = 1;
+                }
+                else if (act == "_#05") {
+                    cout << recvmsg << endl;
+                }
+                else if (act == "_#06") {
+                    client.room = 0;
+                    client.state = 2;
                 }
                 else {
                     cout << recvmsg << endl;
@@ -235,8 +244,33 @@ private:
             result_string += input;
             break;
         case 3:
-            cout << "I'm in room" << endl;
-            getline(cin, input);
+            cout << "== Select Your Action ==" << endl;
+            cout << "     1. Chat Room" << endl;
+            cout << "     2. Exit Room" << endl;
+            while (true) {
+                cout << "  Select : ";
+                getline(cin, input);
+                check_int = atoi(input.c_str());
+
+                if (check_int > 0 && check_int < 3) {
+                    break;
+                }
+                cout << "Wrong action, input again!" << endl;
+            }
+            while (true) {
+                if (check_int == 1) {
+                    result_string = "_#05";
+                    cout << "Send Message : ";
+                    getline(cin, input);
+                    break;
+                }
+                else if (check_int == 2) {
+                    result_string = "_#06";
+                    input = "";
+                    break;
+                }
+            }
+            result_string += input;
             break;
         default:
             cout << "ERROR CASE" << endl;
