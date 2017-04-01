@@ -1,0 +1,38 @@
+<canvas id="ctx" width="500" height="500"></canvas>
+
+<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+<script>
+    var ctx = document.getElementById("ctx").getContext("2d");
+
+    var socket = io();
+
+    socket.on('newPosition', function(data) {
+        ctx.clearRect(0, 0, 500, 500);
+        console.log(data);
+        for (var i = 0; i < data.player.length; i++)
+            ctx.fillText(data.player[i].number, data.player[i].x, data.player[i].y);
+        for (var i = 0; i < data.bullet.length; i++)
+            ctx.fillRect(data.bullet[i].x - 5, data.bullet[i].y - 5, 10, 10);
+    });
+
+    document.onkeydown = function(event) {
+        if(event.keyCode === 68)
+            socket.emit('keyPress', {inputId:'right', state: true});
+        if(event.keyCode === 83)
+            socket.emit('keyPress', {inputId:'down', state: true});
+        if(event.keyCode === 65)
+            socket.emit('keyPress', {inputId:'left', state: true});
+        if(event.keyCode === 87)
+            socket.emit('keyPress', {inputId:'up', state: true});
+    }
+    document.onkeyup = function(event) {
+        if(event.keyCode === 68)
+            socket.emit('keyPress', {inputId:'right', state: false});
+        if(event.keyCode === 83)
+            socket.emit('keyPress', {inputId:'down', state: false});
+        if(event.keyCode === 65)
+            socket.emit('keyPress', {inputId:'left', state: false});
+        if(event.keyCode === 87)
+            socket.emit('keyPress', {inputId:'up', state: false});
+    }
+</script>
