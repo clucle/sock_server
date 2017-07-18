@@ -1,0 +1,9 @@
+﻿  stdafx.cpp
+  echo_server.cpp
+c:\users\dude\desktop\sock_server\c++\chat_json\echo_server\echo_server.cpp(117): warning C4996: 'Json::Reader::getFormatedErrorMessages': Use getFormattedErrorMessages() instead.
+  c:\users\dude\desktop\sock_server\c++\chat_json\echo_server\json\reader.h(116): note: 'Json::Reader::getFormatedErrorMessages' 선언을 참조하십시오.
+lib_json.lib(json_reader.obj) : warning LNK4099: 'lib_json.pdb' PDB를 'lib_json.lib(json_reader.obj)' 또는 'C:\Users\dude\Desktop\sock_server\c++\chat_json\Debug\lib_json.pdb'에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+lib_json.lib(json_value.obj) : warning LNK4099: 'lib_json.pdb' PDB를 'lib_json.lib(json_value.obj)' 또는 'C:\Users\dude\Desktop\sock_server\c++\chat_json\Debug\lib_json.pdb'에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+lib_json.lib(json_writer.obj) : warning LNK4099: 'lib_json.pdb' PDB를 'lib_json.lib(json_writer.obj)' 또는 'C:\Users\dude\Desktop\sock_server\c++\chat_json\Debug\lib_json.pdb'에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+  echo_server.vcxproj -> C:\Users\dude\Desktop\sock_server\c++\chat_json\Debug\echo_server.exe
+  echo_server.vcxproj -> C:\Users\dude\Desktop\sock_server\c++\chat_json\Debug\echo_server.pdb (Partial PDB)
