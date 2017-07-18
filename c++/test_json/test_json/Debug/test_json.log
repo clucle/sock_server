@@ -1,5 +1,0 @@
-﻿  test_json.cpp
-c:\users\dude\desktop\sock_server\c++\test_json\test_json\test_json.cpp(90): warning C4996: 'Json::Reader::getFormatedErrorMessages': Use getFormattedErrorMessages() instead.
-  c:\users\dude\desktop\sock_server\c++\test_json\test_json\json\reader.h(116): note: 'Json::Reader::getFormatedErrorMessages' 선언을 참조하십시오.
-  test_json.vcxproj -> C:\Users\dude\Desktop\sock_server\c++\test_json\Debug\test_json.exe
-  test_json.vcxproj -> C:\Users\dude\Desktop\sock_server\c++\test_json\Debug\test_json.pdb (Partial PDB)
